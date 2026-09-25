@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://example.invalid/v1/recommend",
+  "model": "your-model",
+  "timeoutSeconds": 1.5,
+  "maxRequestsPerMinute": 30,
+  "apiKeySource": "Keychain or server-side proxy"
+}
