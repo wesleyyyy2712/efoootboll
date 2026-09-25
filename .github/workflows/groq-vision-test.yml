@@ -17,9 +17,15 @@ jobs:
       - name: Download one real eFootball gameplay image
         run: curl -L --fail --silent --show-error 'https://files.manuscdn.com/search-media/310519663943459334/7rFhTRc6EitYfygbKyWPqe/McvrLwDPoXyXPXCFZHvZSQ.jpg' -o gameplay.jpg
       - name: Run single-image Groq vision test
-        run: python3 Tools/groq_real_test.py gameplay.jpg | tee groq-report.json
+        id: test
+        continue-on-error: true
+        run: python3 Tools/groq_real_test.py gameplay.jpg groq-report.json
       - name: Upload report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: groq-vision-report
           path: groq-report.json
+      - name: Fail if the real API test failed
+        if: steps.test.outcome == 'failure'
+        run: exit 1
