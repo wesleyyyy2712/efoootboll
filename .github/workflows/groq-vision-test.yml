@@ -11,21 +11,25 @@ jobs:
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       GROQ_MODEL: qwen/qwen3.8-27b
+      GROQ_TEST_IMAGE_URL: https://files.manuscdn.com/search-media/310519663943459334/7rFhTRc6EitYfygbKyWPqe/McvrLwDPoXyXPXCFZHvZSQ.jpg
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Download one real eFootball gameplay image
-        run: curl -L --fail --silent --show-error 'https://files.manuscdn.com/search-media/310519663943459334/7rFhTRc6EitYfygbKyWPqe/McvrLwDPoXyXPXCFZHvZSQ.jpg' -o gameplay.jpg
-      - name: Run single-image Groq vision test
-        id: test
+      - name: Verify Secret is present without revealing it
+        run: |
+          set -euo pipefail
+          test -n "$GROQ_API_KEY"
+          echo "GROQ_API_KEY_PRESENT=true"
+      - name: Run isolated Groq integration probe
+        id: probe
         continue-on-error: true
-        run: python3 Tools/groq_real_test.py gameplay.jpg groq-report.json
-      - name: Upload report
+        run: python3 Tools/groq_integration_probe.py | tee groq-integration-report.json
+      - name: Upload diagnostic report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: groq-vision-report
-          path: groq-report.json
-      - name: Fail if the real API test failed
-        if: steps.test.outcome == 'failure'
+          path: groq-integration-report.json
+      - name: Fail if the real vision request failed
+        if: steps.probe.outcome == 'failure'
         run: exit 1
