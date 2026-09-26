@@ -1,0 +1,1 @@
+Este diretório contém respostas reais sanitizadas usadas nos testes offline. `groq_real_response.json` é a resposta obtida no probe Groq HTTP 200; não contém API key.

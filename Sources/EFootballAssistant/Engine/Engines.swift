@@ -28,10 +28,12 @@ public final class VoiceEngine: NSObject, @unchecked Sendable {
     private let synthesizer = AVSpeechSynthesizer()
     #endif
     private var settings: AppSettings
-    public init(settings: AppSettings = AppSettings()) { self.settings = settings; super.init() }
+    private let onSpeak: ((String) -> Void)?
+    public init(settings: AppSettings = AppSettings(), onSpeak: ((String) -> Void)? = nil) { self.settings = settings; self.onSpeak = onSpeak; super.init() }
     public func update(_ settings: AppSettings) { self.settings = settings }
     public func speak(_ text: String) {
         guard settings.voiceEnabled else { return }
+        onSpeak?(text)
         #if canImport(AVFAudio)
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = settings.voiceRate
@@ -47,8 +49,9 @@ public struct DecisionEngine: Sendable {
     public init() {}
     public func makeDecision(from analysis: FrameAnalysis) -> Recommendation? {
         guard analysis.confidence >= 0.45 else { return nil }
+        if let received = analysis.recommendation { return Recommendation(text: received.message, priority: received.priority) }
         if analysis.opponents.filter({ $0.position.x > 0.45 && $0.position.x < 0.7 }).count >= 2 { return Recommendation(text: "Cuidado com a pressão", priority: .high) }
         if let player = analysis.teammates.first(where: { $0.isFree }) { return Recommendation(text: player.position.x > 0.5 ? "Passe para a direita" : "Passe para a esquerda", priority: .high) }
-        return nil
+        return analysis.recommendation.map { Recommendation(text: $0.message, priority: $0.priority) }
     }
 }
