@@ -56,6 +56,7 @@ final class RealGroqPipelineTests: XCTestCase {
         XCTAssertEqual(recorder.messages, [analysis.recommendation?.message].compactMap { $0 })
         XCTAssertGreaterThanOrEqual(firstDecisionMs, 0)
         XCTAssertGreaterThanOrEqual(firstVoiceDispatchMs, 0)
+        print("Pipeline latency (Groq probe / DecisionEngine / VoiceEngine dispatch): \(groqLatencyMs) ms / \(firstDecisionMs) ms / \(firstVoiceDispatchMs) ms")
 
         let events = await diagnostics.events
         let firstEvent = try XCTUnwrap(events.first)
