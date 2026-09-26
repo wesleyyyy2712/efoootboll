@@ -1,49 +1,27 @@
 # Integração Groq → FrameAnalysis → DecisionEngine → TTS
 
-## Implementado
+## Fluxo integrado
 
-O JSON real obtido no teste HTTP 200 foi incorporado como fixture de teste. `GroqResponseAdapter` decodifica o JSON, converte `game_context` para `GameContext`, preserva a contagem real de jogadores, a flag real da bola e a flag real de espaço livre, e não inventa coordenadas quando o JSON não as fornece.
+A resposta JSON real registrada em `Tests/Fixtures/groq_real_response.json` é decodificada por `GroqResponseAdapter` e convertida para `VisionAIResult`/`FrameAnalysis`. O `GroqVisionService` usa esse mesmo adaptador na resposta efetiva da API; o `GroqAnalysisPipeline` constrói a análise com timestamp e encaminha-a ao `DecisionCoordinator`, que chama o `DecisionEngine`.
 
-`DecisionCoordinator` recebe `FrameAnalysis`, chama `DecisionEngine`, usa a recomendação recebida apenas como fallback estruturado, filtra pela prioridade mínima `medium`, aplica `RecommendationEngine` para cooldown e chama `VoiceEngine` somente quando a recomendação é aceita.
+A fixture real contém contagem e flags visuais, mas não coordenadas. A conversão preserva oito jogadores, bola observada e um espaço observado sem inventar coordenadas ou entidades. O contexto bruto `live_play` permanece `.unknown`, pois não pertence aos casos existentes no enum; o escopo desta etapa não amplia o modelo.
 
-O diagnóstico registra timestamp, latência Groq, quantidade observada de jogadores, bola observada, espaços observados, decisão, motivo de bloqueio por prioridade/cooldown e `tts_triggered`.
+Somente uma decisão válida produzida pelo `DecisionEngine`, com confiança aceita pelo próprio engine e prioridade mínima `.medium`, pode prosseguir. O `RecommendationEngine` aplica cooldown de 2,5 segundos à mesma frase independentemente da prioridade. `VoiceEngine.speak` informa se a fala foi despachada, e o pipeline registra latência de decisão e latência de despacho de voz.
 
-O `GroqAnalysisPipeline` existente agora usa o `DecisionCoordinator`. O sistema de captura não foi alterado nesta etapa.
+## Diagnóstico
 
-## Resultado do teste automatizado
+Cada decisão registra `timestamp`, `groq_latency_ms`, jogadores observados, flag da bola, quantidade de espaços, recebimento e texto da recomendação, decisão, `decision_ms`, `voice_dispatch_ms`, `tts_triggered` e motivo de bloqueio (`no_decision`, `priority`, `cooldown` ou `voice_disabled`).
 
-O fixture reproduz o JSON real:
+## Teste automatizado
 
-```json
-{
-  "visible_players_count": 8,
-  "ball_visible": true,
-  "free_space_visible": true,
-  "game_context": "live_play",
-  "confidence": 0.95,
-  "recommendation": "Use o botão 'Dash & Pressure' para recuperar a posse de bola e pressione o adversário."
-}
-```
+`RealGroqPipelineTests` lê a fixture do teste HTTP 200 e executa a mesma sequência de adaptação usada pelo serviço, seguida de `FrameAnalysis`, `DecisionEngine`, `DecisionCoordinator`, `RecommendationEngine`, `VoiceEngine` e `Diagnostics`. A fixture não dispara uma chamada de rede à Groq: o teste isola a integração dos componentes usando o JSON real armazenado. O callback de voz é apenas uma sonda para contar despachos; não substitui o engine de voz. O teste verifica conversão, decisão média, acionamento único, cooldown, diagnóstico e recusa de fala quando a confiança é insuficiente.
 
-O teste verifica:
+O relatório do probe registrou latência Groq de **854,50 ms**. No teste offline, o valor medido pelo probe é anexado ao diagnóstico; `decision_ms` e `voice_dispatch_ms` são medidos localmente. A confirmação de despacho ao `AVSpeechSynthesizer` é testável pelo callback e pelo código de produção, mas a audição física/saída de áudio precisa de um dispositivo e não foi medida pelo runner.
 
-- JSON → `GroqRealVisionResponse`;
-- resposta → `FrameAnalysis`;
-- contagem observada igual a 8;
-- bola observada igual a `true`;
-- espaço observado igual a 1;
-- recomendação com prioridade média;
-- `DecisionEngine` produz a decisão;
-- `VoiceEngine` é acionado uma vez;
-- diagnóstico contém `players=8`, `ball_detected=true` e `tts_triggered=true`;
-- segunda recomendação igual é bloqueada pelo cooldown.
+## Componentes e limites
 
-A latência Groq usada no teste é a medida real do probe: **854,50 ms**. A decisão e o acionamento do VoiceEngine são medidos localmente pelo teste; o TTS real de áudio depende do AVSpeechSynthesizer no iOS. O teste injeta apenas um observador para confirmar o acionamento, sem substituir o VoiceEngine de produção.
+Reais nesta integração: `GroqVisionService`, `GroqResponseAdapter`, modelos `VisionAIResult`/`FrameAnalysis`, `GroqAnalysisPipeline`, `DecisionEngine`, `DecisionCoordinator`, `RecommendationEngine`, `VoiceEngine` e `Diagnostics`.
 
-## Componentes reais e mocks
+Continuam disponíveis para demonstração/testes offline: `MockCaptureManager`, `MockFrameProcessor` e `MockAIService`. A interface ainda instancia `MockCaptureManager` e `AnalysisPipeline` na tela principal; esta etapa não mudou a captura nem o wiring da tela. `ScreenCaptureKitAdapter` continua sendo código real, mas seu picker/filtro e a ativação pela interface permanecem trabalho pendente fora deste escopo.
 
-Reais nesta integração: `GroqResponseAdapter`, `FrameAnalysis`, `DecisionEngine`, `DecisionCoordinator`, `RecommendationEngine`, `VoiceEngine` e `Diagnostics`.
-
-Continuam disponíveis somente para testes offline ou fallback: `MockCaptureManager`, `MockFrameProcessor` e `MockAIService`. Eles não são usados pelo teste do JSON real desta etapa.
-
-Não foram alterados: captura real, `ScreenCaptureKitAdapter`, arquitetura de captura e formato do provider Groq.
+A chave continua fora do código: `GroqVisionService` recebe a configuração por injeção e o app existente armazena a chave no Keychain. Nenhum segredo foi adicionado ao projeto.

@@ -7,7 +7,10 @@ public actor Diagnostics {
     public struct Event: Sendable { public let date: Date; public let message: String }
     public private(set) var events: [Event] = []
     public init() {}
-    public func log(_ message: String) { events.append(Event(date: Date(), message: message)); if events.count > 500 { events.removeFirst() } }
+    public func log(_ message: String) {
+        events.append(Event(date: Date(), message: message))
+        if events.count > 500 { events.removeFirst() }
+    }
 }
 
 public actor RecommendationEngine {
@@ -15,10 +18,12 @@ public actor RecommendationEngine {
     private var lastDate = Date.distantPast
     private let cooldown: TimeInterval
     public init(cooldown: TimeInterval = 2.5) { self.cooldown = cooldown }
+
     public func accept(_ recommendation: Recommendation) -> Recommendation? {
         let now = Date()
-        guard recommendation.text != lastText || now.timeIntervalSince(lastDate) > cooldown || recommendation.priority == .high else { return nil }
-        lastText = recommendation.text; lastDate = now
+        guard recommendation.text != lastText || now.timeIntervalSince(lastDate) > cooldown else { return nil }
+        lastText = recommendation.text
+        lastDate = now
         return recommendation
     }
 }
@@ -29,10 +34,19 @@ public final class VoiceEngine: NSObject, @unchecked Sendable {
     #endif
     private var settings: AppSettings
     private let onSpeak: ((String) -> Void)?
-    public init(settings: AppSettings = AppSettings(), onSpeak: ((String) -> Void)? = nil) { self.settings = settings; self.onSpeak = onSpeak; super.init() }
+
+    public init(settings: AppSettings = AppSettings(), onSpeak: ((String) -> Void)? = nil) {
+        self.settings = settings
+        self.onSpeak = onSpeak
+        super.init()
+    }
+
     public func update(_ settings: AppSettings) { self.settings = settings }
-    public func speak(_ text: String) {
-        guard settings.voiceEnabled else { return }
+
+    /// Returns true only when speech is enabled and a speech request was dispatched.
+    @discardableResult
+    public func speak(_ text: String) -> Bool {
+        guard settings.voiceEnabled else { return false }
         onSpeak?(text)
         #if canImport(AVFAudio)
         let utterance = AVSpeechUtterance(string: text)
@@ -42,16 +56,24 @@ public final class VoiceEngine: NSObject, @unchecked Sendable {
         synthesizer.stopSpeaking(at: .immediate)
         synthesizer.speak(utterance)
         #endif
+        return true
     }
 }
 
 public struct DecisionEngine: Sendable {
     public init() {}
+
     public func makeDecision(from analysis: FrameAnalysis) -> Recommendation? {
         guard analysis.confidence >= 0.45 else { return nil }
-        if let received = analysis.recommendation { return Recommendation(text: received.message, priority: received.priority) }
-        if analysis.opponents.filter({ $0.position.x > 0.45 && $0.position.x < 0.7 }).count >= 2 { return Recommendation(text: "Cuidado com a pressão", priority: .high) }
-        if let player = analysis.teammates.first(where: { $0.isFree }) { return Recommendation(text: player.position.x > 0.5 ? "Passe para a direita" : "Passe para a esquerda", priority: .high) }
+        if let received = analysis.recommendation {
+            return Recommendation(text: received.message, priority: received.priority)
+        }
+        if analysis.opponents.filter({ $0.position.x > 0.45 && $0.position.x < 0.7 }).count >= 2 {
+            return Recommendation(text: "Cuidado com a pressão", priority: .high)
+        }
+        if let player = analysis.teammates.first(where: { $0.isFree }) {
+            return Recommendation(text: player.position.x > 0.5 ? "Passe para a direita" : "Passe para a esquerda", priority: .high)
+        }
         return analysis.recommendation.map { Recommendation(text: $0.message, priority: $0.priority) }
     }
 }

@@ -2,7 +2,9 @@
 
 ## Realmente implementado
 
-A integração Groq agora está conectada por `GroqAnalysisPipeline`: recebe JPEG, aplica cooldown de requisições, chama `GroqVisionService`, valida o envelope HTTP e o JSON decodificado por `Codable`, converte para `FrameAnalysis`, usa `DecisionEngine` quando necessário, aplica prioridade/cooldown e dispara TTS.
+A integração Groq agora está conectada por `GroqAnalysisPipeline`: recebe JPEG, aplica cooldown de requisições, chama `GroqVisionService`, valida o envelope HTTP e converte os schemas detalhado ou de resumo por `GroqResponseAdapter` para `FrameAnalysis`, usa `DecisionEngine`, aplica prioridade mínima/cooldown e despacha TTS. O JSON real do probe HTTP 200 é usado em teste automatizado offline.
+
+O `DecisionCoordinator` registra timestamp, latência Groq, contagens e flags observadas, recomendação recebida, decisão, latência da decisão, latência de despacho da voz, resultado do acionamento de TTS e motivo de bloqueio. O cooldown também se aplica a recomendações de prioridade alta.
 
 `ScreenCaptureKitAdapter` recebe `CMSampleBuffer`, extrai `CVPixelBuffer` e converte para JPEG com `PixelBufferEncoder`. A API de captura continua sendo um ponto que precisa do picker sistêmico para fornecer o `SCContentFilter`.
 
@@ -14,7 +16,7 @@ O painel `DebugOverlay` mostra bounding boxes quando fornecidas, marcadores, esp
 
 ## O que continua mock ou stub
 
-`MockCaptureManager`, `MockFrameProcessor` e `MockAIService` permanecem apenas para testes offline e demonstração do fluxo. Eles não devem ser usados como prova de detecção real.
+`MockCaptureManager`, `MockFrameProcessor` e `MockAIService` permanecem para testes offline e demonstração do fluxo. A tela inicial ainda instancia `MockCaptureManager` e `AnalysisPipeline`; o novo pipeline Groq é disponibilizado por injeção e exercitado pelo teste com o JSON real, mas sua ativação pela UI não foi alterada nesta etapa. Os mocks não devem ser usados como prova de detecção real.
 
 O detector local de jogadores/bola ainda é uma interface (`ObjectDetector`), porque não há um modelo treinado específico de eFootball no projeto. A detecção visual real do caminho atual é feita pelo provider multimodal Groq quando uma imagem é enviada. A qualidade dessa detecção não foi declarada como validada sem screenshot real.
 
