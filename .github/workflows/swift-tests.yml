@@ -1,0 +1,17 @@
+name: Swift integration tests
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Sources/**'
+      - 'Tests/**'
+      - 'Package.swift'
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Swift tests
+        run: swift test --enable-code-coverage
