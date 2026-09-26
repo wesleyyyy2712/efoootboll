@@ -18,11 +18,16 @@ O código é um **MVP técnico para abrir no Xcode**. O fluxo mock pode ser vali
 
 ## Abrir no Xcode
 
-1. No Mac, abra `Package.swift` no Xcode ou crie um app iOS SwiftUI e adicione os arquivos de `Sources/EFootballAssistant`.
-2. Configure o deployment target e adicione `ScreenCaptureKit`.
-3. Configure `UIBackgroundModes` com `screen-capture` quando suportado pelo target.
-4. Adicione as descrições de privacidade necessárias.
-5. Teste em iPhone real, porque o simulador não comprova captura do display inteiro nem desempenho térmico.
+1. No Mac, abra `EFootballAssistant.xcodeproj`.
+2. Selecione o target `EFootballAssistant` e escolha sua equipe Apple em **Signing & Capabilities**.
+3. Troque `com.example.efootballassistant` por um Bundle ID disponível para sua conta.
+4. Selecione seu iPhone como destino e deixe o Xcode gerar/usar o provisioning profile correspondente.
+5. O projeto já inclui `Config/Info.plist` com `UIBackgroundModes=screen-capture` e `audio`, além da descrição de microfone.
+6. O target mantém deployment target iOS 17; o caminho ScreenCaptureKit/picker exige iOS 27 ou superior e informa isso no app em versões anteriores.
+7. Compile no Xcode. Para assinar externamente, use o Release archive/exportado pelo seu fluxo de assinatura.
+8. Teste em iPhone real, porque o simulador não comprova captura do display inteiro nem desempenho térmico.
+
+O GitHub Actions também executa um build sem assinatura do target iOS em `ios-app-build.yml`. A assinatura Apple não foi incluída no repositório.
 
 ## Teste Groq de uma imagem
 

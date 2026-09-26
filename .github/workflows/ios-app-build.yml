@@ -1,0 +1,25 @@
+name: iOS app build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'EFootballAssistant.xcodeproj/**'
+      - 'Sources/**'
+      - 'Config/**'
+      - '.github/workflows/ios-app-build.yml'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build iOS app without signing
+        run: >-
+          xcodebuild -project EFootballAssistant.xcodeproj
+          -scheme EFootballAssistant
+          -sdk iphonesimulator
+          -configuration Debug
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          build

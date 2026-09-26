@@ -1,0 +1,196 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+		4BF15DB81B2F496DB4289EEC /* EFootballAssistantApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EFootballAssistantApp.swift; sourceTree = "<group>"; };
+		BAA3FF7DBCB3401197578B28 /* EFootballAssistantApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF15DB81B2F496DB4289EEC /* EFootballAssistantApp.swift */; };
+		453332E622984AF4B0FF9AD2 /* DecisionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCoordinator.swift; sourceTree = "<group>"; };
+		EA48045D4DDE4FC681235A44 /* DecisionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453332E622984AF4B0FF9AD2 /* DecisionCoordinator.swift */; };
+		8099408F4DFD4E65BB9FC4A1 /* Engines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engines.swift; sourceTree = "<group>"; };
+		0FC5527B22934634896FF58F /* Engines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099408F4DFD4E65BB9FC4A1 /* Engines.swift */; };
+		B66C9B462D144C17B604DDFC /* GroqPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroqPipeline.swift; sourceTree = "<group>"; };
+		1DCBA4CACC214A74AE01BA48 /* GroqPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66C9B462D144C17B604DDFC /* GroqPipeline.swift */; };
+		C3B1F189D41446F3B2F52FE9 /* MatchStateTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchStateTracker.swift; sourceTree = "<group>"; };
+		BE9853C5F5C748C3AD67FA09 /* MatchStateTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B1F189D41446F3B2F52FE9 /* MatchStateTracker.swift */; };
+		C12AC3BFFCE14639A1F7D80A /* Processing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processing.swift; sourceTree = "<group>"; };
+		195AC25B15FF4E65812DCEA5 /* Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12AC3BFFCE14639A1F7D80A /* Processing.swift */; };
+		01358685785F4D81A414764A /* VisionTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTracking.swift; sourceTree = "<group>"; };
+		C9B1980B5D3046DF8702B92B /* VisionTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01358685785F4D81A414764A /* VisionTracking.swift */; };
+		AED9BCD4604E455499B0CDAC /* Domain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain.swift; sourceTree = "<group>"; };
+		B40DA358F037441786437A70 /* Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED9BCD4604E455499B0CDAC /* Domain.swift */; };
+		E7DF2DDCD9464F4496DFA43A /* GroqResponseAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroqResponseAdapter.swift; sourceTree = "<group>"; };
+		D0417CA8A1F942558D5F63DD /* GroqResponseAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DF2DDCD9464F4496DFA43A /* GroqResponseAdapter.swift */; };
+		1D44B9522DD4431BA9F3C565 /* GroqVisionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroqVisionService.swift; sourceTree = "<group>"; };
+		02130239550E47EEAA3C7D20 /* GroqVisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D44B9522DD4431BA9F3C565 /* GroqVisionService.swift */; };
+		3C795E97EB0C4CED8D6FDE62 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		794B08409BD54FE2A2B90E13 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C795E97EB0C4CED8D6FDE62 /* KeychainStore.swift */; };
+		19B3AD7A70C143F4B30A2653 /* PixelBufferEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBufferEncoder.swift; sourceTree = "<group>"; };
+		AD76B1B5AC6B424086E04944 /* PixelBufferEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B3AD7A70C143F4B30A2653 /* PixelBufferEncoder.swift */; };
+		9748283115204F1D9593B36B /* ReplayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayService.swift; sourceTree = "<group>"; };
+		7D2D9E660ADE4D2489A6D4D4 /* ReplayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9748283115204F1D9593B36B /* ReplayService.swift */; };
+		917DE1CF946E499A88B06125 /* ScreenCaptureKitAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureKitAdapter.swift; sourceTree = "<group>"; };
+		41D764F90205451FA9AFF2A8 /* ScreenCaptureKitAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DE1CF946E499A88B06125 /* ScreenCaptureKitAdapter.swift */; };
+		D006666382E749B88E09D884 /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
+		738129F21C7E443A94D7AA95 /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = D006666382E749B88E09D884 /* Services.swift */; };
+		3FB55FB5B1DA4E76BEF065CD /* AppUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUI.swift; sourceTree = "<group>"; };
+		A794C5BEE06840868C1C61BA /* AppUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB55FB5B1DA4E76BEF065CD /* AppUI.swift */; };
+		9F1A2F07E71D4FBEA5A845CA /* DebugOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugOverlay.swift; sourceTree = "<group>"; };
+		4AF2B557D54C4599B9236440 /* DebugOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A2F07E71D4FBEA5A845CA /* DebugOverlay.swift */; };
+		072AD4F2B4C24E8C994FF1BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config/Info.plist; sourceTree = "<group>"; };
+		3AC786EEDDCF46C4BD94DE38 /* EFootballAssistant.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Config/EFootballAssistant.entitlements; sourceTree = "<group>"; };
+		CED435FF2F1346D582380C66 /* EFootballAssistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EFootballAssistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		E58CD37A9E8348A6AC3D8F9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B75663D1EA0448C59BE42FA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BAA3FF7DBCB3401197578B28 /* EFootballAssistantApp.swift in Sources */,
+				EA48045D4DDE4FC681235A44 /* DecisionCoordinator.swift in Sources */,
+				0FC5527B22934634896FF58F /* Engines.swift in Sources */,
+				1DCBA4CACC214A74AE01BA48 /* GroqPipeline.swift in Sources */,
+				BE9853C5F5C748C3AD67FA09 /* MatchStateTracker.swift in Sources */,
+				195AC25B15FF4E65812DCEA5 /* Processing.swift in Sources */,
+				C9B1980B5D3046DF8702B92B /* VisionTracking.swift in Sources */,
+				B40DA358F037441786437A70 /* Domain.swift in Sources */,
+				D0417CA8A1F942558D5F63DD /* GroqResponseAdapter.swift in Sources */,
+				02130239550E47EEAA3C7D20 /* GroqVisionService.swift in Sources */,
+				794B08409BD54FE2A2B90E13 /* KeychainStore.swift in Sources */,
+				AD76B1B5AC6B424086E04944 /* PixelBufferEncoder.swift in Sources */,
+				7D2D9E660ADE4D2489A6D4D4 /* ReplayService.swift in Sources */,
+				41D764F90205451FA9AFF2A8 /* ScreenCaptureKitAdapter.swift in Sources */,
+				738129F21C7E443A94D7AA95 /* Services.swift in Sources */,
+				A794C5BEE06840868C1C61BA /* AppUI.swift in Sources */,
+				4AF2B557D54C4599B9236440 /* DebugOverlay.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76E60F78F65F43FCAEF0F5B9 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+
+		4662A7DE2E7E4CEBBAA3AA8D /* EFootballAssistant */ = {
+			isa = PBXGroup;
+			children = (
+				4BF15DB81B2F496DB4289EEC /* EFootballAssistantApp.swift */,
+				453332E622984AF4B0FF9AD2 /* DecisionCoordinator.swift */,
+				8099408F4DFD4E65BB9FC4A1 /* Engines.swift */,
+				B66C9B462D144C17B604DDFC /* GroqPipeline.swift */,
+				C3B1F189D41446F3B2F52FE9 /* MatchStateTracker.swift */,
+				C12AC3BFFCE14639A1F7D80A /* Processing.swift */,
+				01358685785F4D81A414764A /* VisionTracking.swift */,
+				AED9BCD4604E455499B0CDAC /* Domain.swift */,
+				E7DF2DDCD9464F4496DFA43A /* GroqResponseAdapter.swift */,
+				1D44B9522DD4431BA9F3C565 /* GroqVisionService.swift */,
+				3C795E97EB0C4CED8D6FDE62 /* KeychainStore.swift */,
+				19B3AD7A70C143F4B30A2653 /* PixelBufferEncoder.swift */,
+				9748283115204F1D9593B36B /* ReplayService.swift */,
+				917DE1CF946E499A88B06125 /* ScreenCaptureKitAdapter.swift */,
+				D006666382E749B88E09D884 /* Services.swift */,
+				3FB55FB5B1DA4E76BEF065CD /* AppUI.swift */,
+				9F1A2F07E71D4FBEA5A845CA /* DebugOverlay.swift */,
+				072AD4F2B4C24E8C994FF1BD /* Info.plist */,
+				3AC786EEDDCF46C4BD94DE38 /* EFootballAssistant.entitlements */,
+			);
+			path = Sources/EFootballAssistant;
+			sourceTree = "<group>";
+		};
+		70A728D506AF4B368BC174B7 /* Products */ = {isa = PBXGroup; children = (CED435FF2F1346D582380C66 /* EFootballAssistant.app */,); name = Products; sourceTree = "<group>"; };
+		CE1F3FBC6BBF4DA6B5294A75 = {isa = PBXGroup; children = (4662A7DE2E7E4CEBBAA3AA8D /* EFootballAssistant */, 70A728D506AF4B368BC174B7 /* Products */); sourceTree = "<group>"; };
+
+		09E91BC8ED8A43A9A770C946 /* EFootballAssistant */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3BD84F03300B431880EBCF44 /* Build configuration list for PBXNativeTarget "EFootballAssistant" */;
+			buildPhases = (B75663D1EA0448C59BE42FA2 /* Sources */, 76E60F78F65F43FCAEF0F5B9 /* Frameworks */, E58CD37A9E8348A6AC3D8F9C /* Resources */);
+			buildRules = ();
+			dependencies = ();
+			name = EFootballAssistant;
+			productName = EFootballAssistant;
+			productReference = CED435FF2F1346D582380C66 /* EFootballAssistant.app */;
+			productType = "com.apple.product-type.application";
+		};
+
+		37944B7A8944456F9CC879B0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = { LastUpgradeCheck = 1600; ORGANIZATIONNAME = eFootballAssistant; TargetAttributes = { 09E91BC8ED8A43A9A770C946 = { CreatedOnToolsVersion = 16.0; }; }; };
+			buildConfigurationList = 981CBF668C264175A1BB4D7E /* Build configuration list for PBXProject "EFootballAssistant" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			knownRegions = (en, Base);
+			mainGroup = CE1F3FBC6BBF4DA6B5294A75;
+			productRefGroup = 70A728D506AF4B368BC174B7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (09E91BC8ED8A43A9A770C946 /* EFootballAssistant */,);
+		};
+
+		4D34E4D6C6B549E49DCE1C3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SWIFT_VERSION = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				TARGETED_DEVICE_FAMILY = 1,2;
+			};
+			name = Debug;
+		};
+		2837E73EDE32420F9EF6A204 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SWIFT_VERSION = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				TARGETED_DEVICE_FAMILY = 1,2;
+			};
+			name = Release;
+		};
+		ED031CA87E4448C0BFDDDF93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.efootballassistant;
+				PRODUCT_NAME = $(TARGET_NAME);
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1,2;
+				VERSIONING_SYSTEM = apple-generic;
+				MARKETING_VERSION = 1.0;
+				CODE_SIGNING_ALLOWED = NO;
+			};
+			name = Debug;
+		};
+		560501159A6A4B9FA948C9C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.efootballassistant;
+				PRODUCT_NAME = $(TARGET_NAME);
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1,2;
+				VERSIONING_SYSTEM = apple-generic;
+				MARKETING_VERSION = 1.0;
+			};
+			name = Release;
+		};
+		981CBF668C264175A1BB4D7E /* Build configuration list for PBXProject "EFootballAssistant" */ = {isa = XCConfigurationList; buildConfigurations = (4D34E4D6C6B549E49DCE1C3B /* Debug */, 2837E73EDE32420F9EF6A204 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		3BD84F03300B431880EBCF44 /* Build configuration list for PBXNativeTarget "EFootballAssistant" */ = {isa = XCConfigurationList; buildConfigurations = (ED031CA87E4448C0BFDDDF93 /* Debug */, 560501159A6A4B9FA948C9C8 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+
+	};
+	rootObject = 37944B7A8944456F9CC879B0 /* Project object */;
+}
