@@ -16,9 +16,11 @@ public actor GroqAnalysisPipeline {
     public private(set) var skippedByCooldown = 0
     public private(set) var capturedFrames = 0
     public private(set) var sentFrames = 0
+    public private(set) var state = MatchStateSnapshot()
 
     private let vision: VisionAIProvider
     private let coordinator: DecisionCoordinator
+    private let stateTracker: MatchStateTracker
     private let diagnostics: Diagnostics
     private let minRequestInterval: TimeInterval
     private var lastRequest = Date.distantPast
@@ -28,7 +30,13 @@ public actor GroqAnalysisPipeline {
         self.vision = vision
         self.diagnostics = diagnostics
         self.coordinator = DecisionCoordinator(recommender: recommender, voice: voice, diagnostics: diagnostics)
+        self.stateTracker = MatchStateTracker(voice: voice, diagnostics: diagnostics)
         self.minRequestInterval = minRequestInterval
+    }
+
+    public func initializeSession() async {
+        await stateTracker.initializeSession()
+        state = await stateTracker.snapshot
     }
 
     public func ingest(imageData: Data, mimeType: String = "image/jpeg", timestamp: TimeInterval = Date().timeIntervalSince1970) async {
@@ -53,6 +61,8 @@ public actor GroqAnalysisPipeline {
             let analysis = result.frameAnalysis(timestamp: timestamp)
             latest = analysis
             await diagnostics.log("frameanalysis_generated")
+            await stateTracker.observe(analysis)
+            state = await stateTracker.snapshot
 
             latestRecommendation = await coordinator.process(analysis, groqLatencyMs: metrics.visionMs)
             metrics.decisionMs = await coordinator.latestDecisionMs

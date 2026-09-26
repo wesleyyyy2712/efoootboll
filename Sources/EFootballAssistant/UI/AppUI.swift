@@ -8,6 +8,7 @@ import SwiftUI
     @Published public var recommendations = 0
     @Published public var capturedFrames = 0
     @Published public var sentFrames = 0
+    @Published public var analysisState = "AGUARDANDO CAPTURA"
     @Published public var settings = AppSettings()
     @Published public var apiKey = ""
     @Published public var showingKeyPrompt = false
@@ -66,10 +67,12 @@ import SwiftUI
                     let metrics = await realPipeline.metrics
                     let captured = await realPipeline.capturedFrames
                     let sent = await realPipeline.sentFrames
+                    let state = await realPipeline.state
                     let recommendation = await realPipeline.latestRecommendation
                     await MainActor.run {
                         self.capturedFrames = captured
                         self.sentFrames = sent
+                        self.analysisState = state.state.rawValue
                         self.latency = String(format: "%.0f ms", metrics.totalMs)
                         if recommendation != nil { self.recommendations += 1 }
                     }
@@ -80,12 +83,15 @@ import SwiftUI
             capture = realCapture
             do {
                 try await realCapture.start()
+                await realPipeline.initializeSession()
                 active = true
+                analysisState = "SYSTEM_INITIALIZED"
                 status = "Captura iniciada — aguardando frames"
             } catch {
                 status = "Captura não iniciada: \(error.localizedDescription)"
                 pipeline = nil
                 capture = nil
+                analysisState = "CAPTURA NÃO INICIADA"
             }
         }
     }
@@ -102,6 +108,7 @@ public struct ContentView: View {
                     Label(vm.active ? "Sistema ativo" : "Sistema parado", systemImage: vm.active ? "checkmark.circle.fill" : "stop.circle")
                         .foregroundStyle(vm.active ? .green : .secondary)
                     Label(vm.status, systemImage: "rectangle.dashed.and.paperclip")
+                    Label(vm.analysisState, systemImage: "waveform.path.ecg")
                     Label("IA \(vm.active ? "analisando" : "em espera")", systemImage: "brain.head.profile")
                     HStack { Text("LATÊNCIA"); Spacer(); Text(vm.latency) }
                     HStack { Text("FRAMES CAPTURADOS"); Spacer(); Text("\(vm.capturedFrames)") }
