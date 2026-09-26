@@ -16,7 +16,7 @@ public actor TemporalTracker {
                 return Point2D(x: (center.x - old.position.x) / dt, y: (center.y - old.position.y) / dt)
             }
             previous[detection.id] = (center, timestamp)
-            output.append(PlayerObservation(id: detection.id, position: center, boundingBox: detection.boundingBox, team: detection.team ?? .opponent, confidence: detection.confidence, isFree: false, velocity: velocity))
+            output.append(PlayerObservation(id: detection.id, position: center, team: detection.team ?? .opponent, boundingBox: detection.boundingBox, confidence: detection.confidence, isFree: false, velocity: velocity))
         }
         return output
     }
