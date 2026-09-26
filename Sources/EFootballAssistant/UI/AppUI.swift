@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 
 @MainActor public final class AppViewModel: ObservableObject {
@@ -19,3 +20,4 @@ private struct APIKeyPrompt: View {
     @ObservedObject var vm:AppViewModel
     var body: some View { NavigationStack { Form { Section("Chave da IA") { SecureField("Cole sua chave Groq",text:$vm.apiKey).textInputAutocapitalization(.never).autocorrectionDisabled(); Text("A chave será guardada somente no Keychain deste iPhone. Ela não será incluída no código nem enviada ao projeto.").font(.footnote).foregroundStyle(.secondary) }; Section { Button("Salvar chave",action:vm.saveKey).disabled(vm.apiKey.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty) } }.navigationTitle("Configurar IA").interactiveDismissDisabled(vm.apiKey.isEmpty) } }
 }
+#endif

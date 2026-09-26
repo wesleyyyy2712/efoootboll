@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "EFootballAssistant",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v17), .macOS(.v13)],
     products: [.library(name: "EFootballAssistant", targets: ["EFootballAssistant"])],
     targets: [
         .target(name: "EFootballAssistant", path: "Sources/EFootballAssistant"),
