@@ -4,7 +4,7 @@ import ScreenCaptureKit
 import CoreMedia
 import CoreVideo
 
-@available(iOS 27.0, *)
+@available(iOS 27.0, macOS 14.0, *)
 public final class ScreenCaptureKitAdapter: NSObject, CaptureManager, SCStreamOutput, SCStreamDelegate, SCContentSharingPickerObserver, @unchecked Sendable {
     private var stream: SCStream?
     private var pendingStart: CheckedContinuation<Void, Error>?
