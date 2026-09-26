@@ -39,6 +39,11 @@ jobs:
 
       - name: Package unsigned device archive
         run: |
+          mkdir -p build/Payload
+          cp -R build/EFootballAssistant.xcarchive/Products/Applications/EFootballAssistant.app build/Payload/
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/Payload \
+            build/EFootballAssistant-unsigned.ipa
           ditto -c -k --sequesterRsrc --keepParent \
             build/EFootballAssistant.xcarchive \
             build/EFootballAssistant-unsigned.xcarchive.zip
@@ -51,6 +56,7 @@ jobs:
         with:
           name: EFootballAssistant-iOS-unsigned
           path: |
+            build/EFootballAssistant-unsigned.ipa
             build/EFootballAssistant-unsigned.xcarchive.zip
             build/EFootballAssistant-unsigned.app.zip
             build/simulator/Build/Products/Debug-iphonesimulator/EFootballAssistant.app
