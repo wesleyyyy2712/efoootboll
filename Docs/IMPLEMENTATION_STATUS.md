@@ -16,11 +16,11 @@ O painel `DebugOverlay` mostra bounding boxes quando fornecidas, marcadores, esp
 
 ## O que continua mock ou stub
 
-`MockCaptureManager`, `MockFrameProcessor` e `MockAIService` permanecem para testes offline e demonstração do fluxo. A tela inicial ainda instancia `MockCaptureManager` e `AnalysisPipeline`; o novo pipeline Groq é disponibilizado por injeção e exercitado pelo teste com o JSON real, mas sua ativação pela UI não foi alterada nesta etapa. Os mocks não devem ser usados como prova de detecção real.
+`MockCaptureManager`, `MockFrameProcessor` e `MockAIService` permanecem para testes offline e demonstração do fluxo, mas foram retirados do caminho principal da tela. A `AppViewModel` agora cria `GroqAnalysisPipeline` com `GroqVisionService` e conecta seu callback ao `ScreenCaptureKitAdapter`. Os mocks não devem ser usados como prova de detecção real.
 
 O detector local de jogadores/bola ainda é uma interface (`ObjectDetector`), porque não há um modelo treinado específico de eFootball no projeto. A detecção visual real do caminho atual é feita pelo provider multimodal Groq quando uma imagem é enviada. A qualidade dessa detecção não foi declarada como validada sem screenshot real.
 
-O adapter ScreenCaptureKit contém a conversão real para JPEG, mas o acionamento do `SCContentSharingPicker` e a entrega do `SCContentFilter` precisam ser ligados no target de app iOS real.
+O `ScreenCaptureKitAdapter` agora apresenta o `SCContentSharingPicker` oficial, recebe o `SCContentFilter` pelo observer e inicia o `SCStream`. O iOS 27 ou posterior e a ação de seleção/autorização do usuário continuam necessários; a captura ainda não foi testada fisicamente em iPhone.
 
 ## Modelo Groq
 
@@ -62,4 +62,4 @@ Use `everyNthFrame` alto no primeiro teste. A Groq não deve receber todos os fr
 
 ## Dependências restantes
 
-Ainda depende de Xcode/iPhone: compilar, configurar o picker do ScreenCaptureKit, validar permissões, testar captura do eFootball, medir bateria/temperatura e executar uma imagem/vídeo real. A precisão dos jogadores/bola depende da imagem e do modelo; não há um modelo local treinado de eFootball incluído.
+Ainda depende de Xcode/iPhone: compilar com o SDK iOS 27, validar permissões e entitlement `UIBackgroundModes=screen-capture`, selecionar o conteúdo no picker, testar captura do eFootball, medir bateria/temperatura e executar uma partida real. A precisão dos jogadores/bola depende da imagem e do modelo; não há um modelo local treinado de eFootball incluído.

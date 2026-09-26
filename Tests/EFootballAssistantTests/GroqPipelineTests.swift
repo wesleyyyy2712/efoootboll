@@ -40,4 +40,16 @@ final class GroqPipelineTests: XCTestCase {
         XCTAssertEqual(requests, 1)
         XCTAssertEqual(skipped, 1)
     }
+
+    func testPipelineCountsCapturedAndSentFrames() async {
+        let pipeline = GroqAnalysisPipeline(vision: StubVision(result: VisionAIResult(confidence: 0.8)), minRequestInterval: 60)
+
+        await pipeline.ingest(imageData: Data([1]), timestamp: 1)
+        await pipeline.ingest(imageData: Data([2]), timestamp: 2)
+
+        let captured = await pipeline.capturedFrames
+        let sent = await pipeline.sentFrames
+        XCTAssertEqual(captured, 2)
+        XCTAssertEqual(sent, 1)
+    }
 }

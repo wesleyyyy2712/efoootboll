@@ -14,6 +14,8 @@ public actor GroqAnalysisPipeline {
     public private(set) var metrics = PipelineMetrics()
     public private(set) var requests = 0
     public private(set) var skippedByCooldown = 0
+    public private(set) var capturedFrames = 0
+    public private(set) var sentFrames = 0
 
     private let vision: VisionAIProvider
     private let coordinator: DecisionCoordinator
@@ -31,20 +33,26 @@ public actor GroqAnalysisPipeline {
 
     public func ingest(imageData: Data, mimeType: String = "image/jpeg", timestamp: TimeInterval = Date().timeIntervalSince1970) async {
         let started = Date()
+        capturedFrames += 1
+        await diagnostics.log("frame_received timestamp=\(timestamp)")
+        await diagnostics.log("frame_converted")
         guard Date().timeIntervalSince(lastRequest) >= minRequestInterval else {
             skippedByCooldown += 1
             return
         }
         lastRequest = Date()
         requests += 1
+        sentFrames += 1
         await diagnostics.log("groq_request_started")
         let visionStart = Date()
 
         do {
             let result = try await vision.analyze(imageData: imageData, mimeType: mimeType)
             metrics.visionMs = Date().timeIntervalSince(visionStart) * 1000
+            await diagnostics.log("groq_response_received latency_ms=\(metrics.visionMs)")
             let analysis = result.frameAnalysis(timestamp: timestamp)
             latest = analysis
+            await diagnostics.log("frameanalysis_generated")
 
             latestRecommendation = await coordinator.process(analysis, groqLatencyMs: metrics.visionMs)
             metrics.decisionMs = await coordinator.latestDecisionMs
