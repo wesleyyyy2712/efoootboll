@@ -14,12 +14,44 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-      - name: Build iOS app without signing
+      - name: Build iOS simulator target without signing
         run: >-
           xcodebuild -project EFootballAssistant.xcodeproj
           -scheme EFootballAssistant
           -sdk iphonesimulator
           -configuration Debug
           -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build/simulator
           CODE_SIGNING_ALLOWED=NO
           build
+
+      - name: Archive iOS device target without signing
+        run: >-
+          xcodebuild -project EFootballAssistant.xcodeproj
+          -scheme EFootballAssistant
+          -sdk iphoneos
+          -configuration Release
+          -destination 'generic/platform=iOS'
+          -archivePath build/EFootballAssistant.xcarchive
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+          archive
+
+      - name: Package unsigned device archive
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/EFootballAssistant.xcarchive \
+            build/EFootballAssistant-unsigned.xcarchive.zip
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/EFootballAssistant.xcarchive/Products/Applications/EFootballAssistant.app \
+            build/EFootballAssistant-unsigned.app.zip
+
+      - name: Upload iOS build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: EFootballAssistant-iOS-unsigned
+          path: |
+            build/EFootballAssistant-unsigned.xcarchive.zip
+            build/EFootballAssistant-unsigned.app.zip
+            build/simulator/Build/Products/Debug-iphonesimulator/EFootballAssistant.app
+          if-no-files-found: error
