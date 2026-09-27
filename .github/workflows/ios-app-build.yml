@@ -93,7 +93,7 @@ jobs:
               echo "P12_COMPONENT_IMPORT=CERTIFICATE_ERROR"
               exit 1
             fi
-            if ! security import "$KEY_PEM" -k "$KEYCHAIN_PATH" -f pem -A -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
+            if ! security import "$KEY_PEM" -k "$KEYCHAIN_PATH" -f pkcs8 -P "" -A -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
               echo "P12_COMPONENT_IMPORT=PRIVATE_KEY_ERROR"
               exit 1
             fi
