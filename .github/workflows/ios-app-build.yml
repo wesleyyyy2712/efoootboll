@@ -78,11 +78,13 @@ jobs:
             echo "P12_IMPORT_METHOD=SEPARATE_CERTIFICATE_AND_PRIVATE_KEY"
             CERT_PEM="$RUNNER_TEMP/apple-signing-cert.pem"
             KEY_PEM="$RUNNER_TEMP/apple-signing-key.pem"
-            if ! openssl pkcs12 -in "$P12_PATH" -clcerts -nokeys -passin env:IOS_CERTIFICATE_PASSWORD -out "$CERT_PEM" 2> "$IMPORT_LOG"; then
+            if ! openssl pkcs12 -in "$P12_PATH" -clcerts -nokeys -passin env:IOS_CERTIFICATE_PASSWORD 2> "$IMPORT_LOG" \
+              | openssl x509 -out "$CERT_PEM" 2> "$IMPORT_LOG"; then
               echo "P12_COMPONENT_EXTRACTION=CERTIFICATE_ERROR"
               exit 1
             fi
-            if ! openssl pkcs12 -in "$P12_PATH" -nocerts -nodes -passin env:IOS_CERTIFICATE_PASSWORD -out "$KEY_PEM" 2> "$IMPORT_LOG"; then
+            if ! openssl pkcs12 -in "$P12_PATH" -nocerts -nodes -passin env:IOS_CERTIFICATE_PASSWORD 2> "$IMPORT_LOG" \
+              | openssl pkey -out "$KEY_PEM" 2> "$IMPORT_LOG"; then
               echo "P12_COMPONENT_EXTRACTION=PRIVATE_KEY_ERROR"
               exit 1
             fi
