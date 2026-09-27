@@ -61,6 +61,15 @@ jobs:
             fi
             exit 1
           fi
+          if openssl pkcs12 -in "$P12_PATH" -nocerts -nodes -passin env:IOS_CERTIFICATE_PASSWORD 2> "$IMPORT_LOG" | grep -q 'PRIVATE KEY'; then
+            echo "P12_PRIVATE_KEY_PRESENT=YES"
+          else
+            echo "P12_PRIVATE_KEY_PRESENT=NO_OR_UNREADABLE"
+          fi
+          openssl pkcs12 -in "$P12_PATH" -clcerts -nokeys -passin env:IOS_CERTIFICATE_PASSWORD 2> "$IMPORT_LOG" \
+            | openssl x509 -noout -subject -issuer -serial -dates 2> "$IMPORT_LOG" \
+            | sed -E 's/(subject=|issuer=|serial=|notBefore=|notAfter=)/\1/'
+          echo "P12_CERTIFICATE_METADATA_READ=YES"
           NORMALIZED_P12="$RUNNER_TEMP/apple-signing-normalized.p12"
           NORMALIZED_PASSWORD="$(uuidgen)"
           export NORMALIZED_PASSWORD
