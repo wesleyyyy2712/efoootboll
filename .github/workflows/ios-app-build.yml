@@ -89,11 +89,16 @@ jobs:
               exit 1
             fi
             chmod 600 "$KEY_PEM"
+            KEY_DER="$RUNNER_TEMP/apple-signing-key.der"
+            if ! openssl pkcs8 -topk8 -nocrypt -in "$KEY_PEM" -outform DER -out "$KEY_DER" 2> "$IMPORT_LOG"; then
+              echo "P12_COMPONENT_EXTRACTION=PRIVATE_KEY_DER_ERROR"
+              exit 1
+            fi
             if ! security add-certificates -k "$KEYCHAIN_PATH" "$CERT_PEM" > "$IMPORT_LOG" 2>&1; then
               echo "P12_COMPONENT_IMPORT=CERTIFICATE_ERROR"
               exit 1
             fi
-            if ! security import "$KEY_PEM" -k "$KEYCHAIN_PATH" -f pkcs8 -P "" -A -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
+            if ! security import "$KEY_DER" -k "$KEYCHAIN_PATH" -f pkcs8 -P "" -A -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
               echo "P12_COMPONENT_IMPORT=PRIVATE_KEY_ERROR"
               exit 1
             fi
