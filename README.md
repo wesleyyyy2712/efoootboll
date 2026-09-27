@@ -19,8 +19,8 @@ O código é um **MVP técnico para abrir no Xcode**. O fluxo mock pode ser vali
 ## Abrir no Xcode
 
 1. No Mac, abra `EFootballAssistant.xcodeproj`.
-2. Selecione o target `EFootballAssistant` e escolha sua equipe Apple em **Signing & Capabilities**.
-3. Troque `com.example.efootballassistant` por um Bundle ID disponível para sua conta.
+2. Selecione o target `EFootballAssistant` e confirme o Team ID `UWMJ7ZLK3T` em **Signing & Capabilities**.
+3. Confirme o Bundle ID `app.coconut9292.caracal4431` (ele já está configurado no projeto).
 4. Selecione seu iPhone como destino e deixe o Xcode gerar/usar o provisioning profile correspondente.
 5. O projeto já inclui `Config/Info.plist` com `UIBackgroundModes=screen-capture` e `audio`, além da descrição de microfone.
 6. O target mantém deployment target iOS 17; o caminho ScreenCaptureKit/picker exige iOS 27 ou superior e informa isso no app em versões anteriores.
