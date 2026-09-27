@@ -70,29 +70,37 @@ jobs:
             | openssl x509 -noout -subject -issuer -serial -dates 2> "$IMPORT_LOG" \
             | sed -E 's/(subject=|issuer=|serial=|notBefore=|notAfter=)/\1/'
           echo "P12_CERTIFICATE_METADATA_READ=YES"
-          NORMALIZED_P12="$RUNNER_TEMP/apple-signing-normalized.p12"
-          NORMALIZED_PASSWORD="$(uuidgen)"
-          export NORMALIZED_PASSWORD
-          if ! openssl pkcs12 -in "$P12_PATH" -nodes -passin env:IOS_CERTIFICATE_PASSWORD -out "$RUNNER_TEMP/p12-material.pem" 2> "$IMPORT_LOG"; then
-            echo "P12_NORMALIZATION=ERROR_READING_PKCS12"
-            grep -Eio 'error[^[:cntrl:]]*|bad decrypt|mac verify error|unsupported[^[:cntrl:]]*|unknown option' "$IMPORT_LOG" | head -5 || true
-            exit 1
-          fi
-          if ! openssl pkcs12 -export -legacy -in "$RUNNER_TEMP/p12-material.pem" -out "$NORMALIZED_P12" -passout env:NORMALIZED_PASSWORD -name "EFootball Signing" 2> "$IMPORT_LOG"; then
-            echo "P12_NORMALIZATION=ERROR_REPACKAGING_PKCS12"
-            grep -Eio 'error[^[:cntrl:]]*|bad decrypt|mac verify error|unsupported[^[:cntrl:]]*|unknown option' "$IMPORT_LOG" | head -5 || true
-            exit 1
-          fi
-          if security import "$NORMALIZED_P12" -P "$NORMALIZED_PASSWORD" -k "$KEYCHAIN_PATH" -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
+          if security import "$P12_PATH" -P "$IOS_CERTIFICATE_PASSWORD" -k "$KEYCHAIN_PATH" -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
             echo "P12_KEYCHAIN_IMPORT=SUCCESS"
-            echo "P12_IMPORT_METHOD=OPENSSL_NORMALIZED_PKCS12"
+            echo "P12_IMPORT_METHOD=PKCS12_DIRECT"
           else
-            echo "P12_KEYCHAIN_IMPORT=ERROR"
-            if grep -Eiq 'MAC verification|wrong password|SecKeychainItemImport' "$IMPORT_LOG"; then
-              echo "P12_KEYCHAIN_EVIDENCE=PASSWORD_OR_FILE_MAC_FAILURE"
-            else
-              echo "P12_KEYCHAIN_EVIDENCE=MACOS_KEYCHAIN_REJECTION"
+            echo "P12_KEYCHAIN_IMPORT=DIRECT_ERROR"
+            echo "P12_IMPORT_METHOD=SEPARATE_CERTIFICATE_AND_PRIVATE_KEY"
+            CERT_PEM="$RUNNER_TEMP/apple-signing-cert.pem"
+            KEY_PEM="$RUNNER_TEMP/apple-signing-key.pem"
+            if ! openssl pkcs12 -in "$P12_PATH" -clcerts -nokeys -passin env:IOS_CERTIFICATE_PASSWORD -out "$CERT_PEM" 2> "$IMPORT_LOG"; then
+              echo "P12_COMPONENT_EXTRACTION=CERTIFICATE_ERROR"
+              exit 1
             fi
+            if ! openssl pkcs12 -in "$P12_PATH" -nocerts -nodes -passin env:IOS_CERTIFICATE_PASSWORD -out "$KEY_PEM" 2> "$IMPORT_LOG"; then
+              echo "P12_COMPONENT_EXTRACTION=PRIVATE_KEY_ERROR"
+              exit 1
+            fi
+            chmod 600 "$KEY_PEM"
+            if ! security import "$CERT_PEM" -k "$KEYCHAIN_PATH" -f pem -A > "$IMPORT_LOG" 2>&1; then
+              echo "P12_COMPONENT_IMPORT=CERTIFICATE_ERROR"
+              exit 1
+            fi
+            if ! security import "$KEY_PEM" -k "$KEYCHAIN_PATH" -f pem -A -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
+              echo "P12_COMPONENT_IMPORT=PRIVATE_KEY_ERROR"
+              exit 1
+            fi
+            echo "P12_COMPONENT_IMPORT=SUCCESS"
+          fi
+          if security find-identity -v -p codesigning "$KEYCHAIN_PATH" 2>/dev/null | grep -Eq '[1-9][0-9]* valid identities found'; then
+            echo "CODESIGN_IDENTITY_AVAILABLE=YES"
+          else
+            echo "CODESIGN_IDENTITY_AVAILABLE=NO"
             exit 1
           fi
           security list-keychains -d user -s "$KEYCHAIN_PATH"
