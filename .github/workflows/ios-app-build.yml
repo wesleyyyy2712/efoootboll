@@ -61,7 +61,7 @@ jobs:
             fi
             exit 1
           fi
-          if security import "$P12_PATH" -P "$IOS_CERTIFICATE_PASSWORD" -A -f pkcs12 -k "$KEYCHAIN_PATH" > "$IMPORT_LOG" 2>&1; then
+          if security import "$P12_PATH" -P "$IOS_CERTIFICATE_PASSWORD" -k "$KEYCHAIN_PATH" -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
             echo "P12_KEYCHAIN_IMPORT=SUCCESS"
           else
             echo "P12_KEYCHAIN_IMPORT=ERROR"
