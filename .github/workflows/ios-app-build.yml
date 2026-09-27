@@ -89,7 +89,7 @@ jobs:
               exit 1
             fi
             chmod 600 "$KEY_PEM"
-            if ! security import "$CERT_PEM" -k "$KEYCHAIN_PATH" -f pem -A > "$IMPORT_LOG" 2>&1; then
+            if ! security add-certificates -k "$KEYCHAIN_PATH" "$CERT_PEM" > "$IMPORT_LOG" 2>&1; then
               echo "P12_COMPONENT_IMPORT=CERTIFICATE_ERROR"
               exit 1
             fi
