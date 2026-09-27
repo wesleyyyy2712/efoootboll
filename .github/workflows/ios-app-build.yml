@@ -42,33 +42,33 @@ jobs:
           test -s "$P12_PATH"
           P12_BYTES="$(wc -c < "$P12_PATH" | tr -d '[:space:]')"
           P12_SHA256="$(shasum -a 256 "$P12_PATH" | awk '{print $1}')"
-          echo "p12 file exists: YES"
-          echo "p12 size in bytes: $P12_BYTES"
-          echo "p12 SHA-256: $P12_SHA256"
+          echo "P12_FILE_EXISTS=YES"
+          echo "P12_SIZE_BYTES=$P12_BYTES"
+          echo "P12_SHA256=$P12_SHA256"
           if file "$P12_PATH" | grep -Eiq 'PKCS|certificate|data'; then
-            echo "recognized as PKCS#12: YES"
+            echo "P12_RECOGNIZED=YES"
           else
-            echo "recognized as PKCS#12: UNKNOWN"
+            echo "P12_RECOGNIZED=UNKNOWN"
           fi
           if openssl pkcs12 -info -noout -passin env:IOS_CERTIFICATE_PASSWORD < "$P12_PATH" > "$IMPORT_LOG" 2>&1; then
-            echo "PKCS#12 password validation: SUCCESS"
+            echo "P12_OPENSSL_PASSWORD_CHECK=SUCCESS"
           else
-            echo "PKCS#12 password validation: ERROR"
+            echo "P12_OPENSSL_PASSWORD_CHECK=ERROR"
             if grep -Eiq 'mac verify error|invalid password|mac verification' "$IMPORT_LOG"; then
-              echo "PKCS#12 evidence: password/file MAC verification failed"
+              echo "P12_OPENSSL_EVIDENCE=PASSWORD_OR_FILE_MAC_FAILURE"
             else
-              echo "PKCS#12 evidence: format or password could not be validated"
+              echo "P12_OPENSSL_EVIDENCE=FORMAT_OR_PASSWORD_FAILURE"
             fi
             exit 1
           fi
-          if security import "$P12_PATH" -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH" > "$IMPORT_LOG" 2>&1; then
-            echo "keychain import with Secret password: SUCCESS"
+          if security import "$P12_PATH" -P "$IOS_CERTIFICATE_PASSWORD" -A -f pkcs12 -k "$KEYCHAIN_PATH" > "$IMPORT_LOG" 2>&1; then
+            echo "P12_KEYCHAIN_IMPORT=SUCCESS"
           else
-            echo "keychain import with Secret password: ERROR"
+            echo "P12_KEYCHAIN_IMPORT=ERROR"
             if grep -Eiq 'MAC verification|wrong password|SecKeychainItemImport' "$IMPORT_LOG"; then
-              echo "keychain import evidence: password/file MAC verification failed"
+              echo "P12_KEYCHAIN_EVIDENCE=PASSWORD_OR_FILE_MAC_FAILURE"
             else
-              echo "keychain import evidence: macOS keychain rejected the PKCS#12"
+              echo "P12_KEYCHAIN_EVIDENCE=MACOS_KEYCHAIN_REJECTION"
             fi
             exit 1
           fi
