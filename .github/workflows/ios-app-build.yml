@@ -64,8 +64,16 @@ jobs:
           NORMALIZED_P12="$RUNNER_TEMP/apple-signing-normalized.p12"
           NORMALIZED_PASSWORD="$(uuidgen)"
           export NORMALIZED_PASSWORD
-          openssl pkcs12 -in "$P12_PATH" -nodes -passin env:IOS_CERTIFICATE_PASSWORD -out "$RUNNER_TEMP/p12-material.pem" 2> "$IMPORT_LOG"
-          openssl pkcs12 -export -legacy -in "$RUNNER_TEMP/p12-material.pem" -out "$NORMALIZED_P12" -passout env:NORMALIZED_PASSWORD -name "EFootball Signing" 2> "$IMPORT_LOG"
+          if ! openssl pkcs12 -in "$P12_PATH" -nodes -passin env:IOS_CERTIFICATE_PASSWORD -out "$RUNNER_TEMP/p12-material.pem" 2> "$IMPORT_LOG"; then
+            echo "P12_NORMALIZATION=ERROR_READING_PKCS12"
+            grep -Eio 'error[^[:cntrl:]]*|bad decrypt|mac verify error|unsupported[^[:cntrl:]]*|unknown option' "$IMPORT_LOG" | head -5 || true
+            exit 1
+          fi
+          if ! openssl pkcs12 -export -legacy -in "$RUNNER_TEMP/p12-material.pem" -out "$NORMALIZED_P12" -passout env:NORMALIZED_PASSWORD -name "EFootball Signing" 2> "$IMPORT_LOG"; then
+            echo "P12_NORMALIZATION=ERROR_REPACKAGING_PKCS12"
+            grep -Eio 'error[^[:cntrl:]]*|bad decrypt|mac verify error|unsupported[^[:cntrl:]]*|unknown option' "$IMPORT_LOG" | head -5 || true
+            exit 1
+          fi
           if security import "$NORMALIZED_P12" -P "$NORMALIZED_PASSWORD" -k "$KEYCHAIN_PATH" -T /usr/bin/codesign > "$IMPORT_LOG" 2>&1; then
             echo "P12_KEYCHAIN_IMPORT=SUCCESS"
             echo "P12_IMPORT_METHOD=OPENSSL_NORMALIZED_PKCS12"
