@@ -1,0 +1,51 @@
+name: iOS unsigned clean IPA
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'EFootballAssistant.xcodeproj/**'
+      - 'Sources/**'
+      - 'Config/**'
+      - '.github/workflows/ios-unsigned-clean.yml'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Archive iOS device target without signing
+        run: >-
+          xcodebuild -project EFootballAssistant.xcodeproj
+          -scheme EFootballAssistant
+          -sdk iphoneos
+          -configuration Release
+          -destination 'generic/platform=iOS'
+          -archivePath build/EFootballAssistant-clean.xcarchive
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+          archive
+
+      - name: Create clean unsigned IPA with standard ZIP layout
+        run: |
+          set -euo pipefail
+          APP="build/EFootballAssistant-clean.xcarchive/Products/Applications/EFootballAssistant.app"
+          test -d "$APP"
+          rm -rf build/ipa-root
+          mkdir -p build/ipa-root/Payload
+          cp -R "$APP" build/ipa-root/Payload/
+          rm -rf build/ipa-root/Payload/EFootballAssistant.app/_CodeSignature
+          rm -f build/ipa-root/Payload/EFootballAssistant.app/embedded.mobileprovision
+          cd build/ipa-root
+          zip -qry ../EFootballAssistant-clean-unsigned.ipa Payload
+          cd ../..
+          unzip -tq build/EFootballAssistant-clean-unsigned.ipa
+          test -s build/EFootballAssistant-clean-unsigned.ipa
+
+      - name: Upload clean unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: EFootballAssistant-clean-unsigned
+          path: build/EFootballAssistant-clean-unsigned.ipa
+          if-no-files-found: error
